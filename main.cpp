@@ -49,6 +49,7 @@ public:
         delete[] is_prime;
     }
 
+    // Finds all primes between 2 and limit inclusive. Returns in a std::vector
     std::vector<int> get_primes() {
         std::vector<int> primes;
         int i = 0;
@@ -61,22 +62,32 @@ public:
             }
             ++i;
             // finds the next integer that is marked true
-            while (!is_prime[i]) {
-                ++i;
-            }
+            while (!is_prime[i]) { ++i; }
             p = arr[i];
         }
 
         return primes;
     }
+
+
+    // Returns the largest prime <= limit
+    int greatest_prime() {
+        std::vector<int> p = get_primes();
+        return p[p.size() - 1];
+    }
 };
 
+
 int main(int argc, char * argv[]) {
-    int lim = std::atoi(argv[1]);
-    EratosSieve s(lim);
-    std::vector<int> p = s.get_primes();
-    for (int & i : p) {
-        std::cout << i << '\n';
+    if (argc == 2) {
+        int lim = std::atoi(argv[1]);
+        EratosSieve s(lim);
+        std::cout << s.greatest_prime() << '\n';
+        /* std::vector<int> p = s.get_primes();
+        for (int & i : p) {
+            std::cout << i << '\n';
+        } */
+        return 0;
     }
-    return 0;
+    return -1;
 }
