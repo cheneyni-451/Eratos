@@ -1,93 +1,47 @@
 #include <iostream>
+#include <cmath>
 #include <vector>
 
-class EratosSieve {
-private:
-    int * arr;
-    bool * is_prime;
-    int limit;
+std::vector<unsigned long int> getPrimes(unsigned long int limit) {
+    bool * is_prime = new bool[limit - 1];
+    for (unsigned long int i = 0; i < limit - 1; ++i) { is_prime[i] = true; }
 
-public:
-    EratosSieve(int n) : limit(n) {
-        arr = new int[n - 1];
-        is_prime = new bool[n - 1];
-        for (int i = 2; i <= limit; ++i) {
-            arr[i - 2] = i;
-            is_prime[i - 2] = true;
-        }
-    }
-
-    EratosSieve(const EratosSieve & other) : limit(other.limit) {
-        arr = new int[other.limit - 1];
-        is_prime = new bool[other.limit - 1];
-        for (int i = 2; i <= limit; ++i) {
-            arr[i - 2] = other.arr[i - 2];
-            is_prime[i - 2] = other.is_prime[i - 2];
-        }
-    }
-
-    EratosSieve & operator=(const EratosSieve & rhs) {
-        if (this != &rhs) {
-            limit = rhs.limit;
-
-            delete[] arr;
-            delete[] is_prime;
-
-            arr = new int[limit - 1];
-            is_prime = new bool[limit - 1];
-
-            for (int i = 0; i < limit - 1; ++i) {
-                arr[i] = rhs.arr[i];
-                is_prime[i] = rhs.is_prime[i];
+    for (unsigned long int i = 2; i <= static_cast<unsigned long int>(pow(limit, 0.5)); ++i) {
+        if (is_prime[i - 2]) {
+            for (unsigned long int j = static_cast<unsigned long int>(pow(i, 2)); j <= limit; j += i) {
+                is_prime[j - 2] = false;
             }
         }
-        return *this;
     }
 
-    ~EratosSieve() {
-        delete[] arr;
-        delete[] is_prime;
+    std::vector<unsigned long int> primes;
+    for (unsigned long int i = 0; i < limit - 1; ++i) {
+        if (is_prime[i])
+            primes.push_back(i + 2);
     }
 
-    // Finds all primes between 2 and limit inclusive. Returns in a std::vector
-    std::vector<int> get_primes() {
-        std::vector<int> primes;
-        int i = 0;
-        int p = arr[0];
+    delete[] is_prime;
 
-        while (i < limit - 1) {
-            primes.push_back(p);
-            for (int mults = 2 * p; mults <= limit; mults += p) {
-                is_prime[mults - 2] = false;
-            }
-            ++i;
-            // finds the next integer that is marked true
-            while (!is_prime[i]) { ++i; }
-            p = arr[i];
-        }
+    return primes;
+}
 
-        return primes;
-    }
-
-
-    // Returns the largest prime <= limit
-    int greatest_prime() {
-        std::vector<int> p = get_primes();
+unsigned long int greatest_prime(unsigned long int limit) {
+    std::vector<unsigned long int> p = getPrimes(limit);
+    if (p.size() != 0)
         return p[p.size() - 1];
-    }
-};
-
+    else
+        return -1;
+}
 
 int main(int argc, char * argv[]) {
     if (argc == 2) {
-        int lim = std::atoi(argv[1]);
-        EratosSieve s(lim);
-        std::cout << s.greatest_prime() << '\n';
-        /* std::vector<int> p = s.get_primes();
-        for (int & i : p) {
+        unsigned long int lim = std::atoi(argv[1]);/* 
+        std::vector<long> primes = getPrimes(lim);
+        for (const long & i : primes) {
             std::cout << i << '\n';
         } */
+        std::cout << greatest_prime(lim) << '\n';
         return 0;
     }
-    return -1;
+    return 1;
 }
